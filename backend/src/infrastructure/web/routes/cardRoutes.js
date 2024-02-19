@@ -19,8 +19,19 @@ router.get('/', (req, res) => {
     return res.json(result);
 });
 
+router.get('/quizz', (req, res) => {
+    const { date } = req.query;
+    let result = cards;
+
+    if (date) {
+        result = cards.filter(card => card.date == date);
+    }
+
+    return res.json(result);
+});
+
 router.post('/', (req, res) => {
-    const { question, answer, tags } = req.body;
+    const { question, answer, tags, date } = req.body;
     if (!question || !answer) {
         return res.status(400).json({ message: 'Question and answer are required.' });
     }
