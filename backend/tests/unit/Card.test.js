@@ -8,56 +8,54 @@ let cards = [
 ];
 
 describe('CRUD Operations for Cards', () => {
-    // describe('createCard', () => {
-    //     it('devrait créer une nouvelle carte avec succès', () => {
-    //         const req = {
-    //             body: {
-    //                 question: 'New Question',
-    //                 answer: 'New Answer',
-    //                 tags: ['newTag'],
-    //                 date: '2024-02-19'
-    //             }
-    //         };
-    //         const res = {
-    //             status: jest.fn().mockReturnThis(),
-    //             json: jest.fn()
-    //         };
-    //         createCard(req, res);
-    //         expect(res.status).toHaveBeenCalledWith(201);
-    //         expect(res.json).toHaveBeenCalled();
-    //         // Ajoute ici des assertions pour vérifier que la carte créée est correcte
-    //     });
-    // });
+    describe('createCard', () => {
+        it('devrait créer une nouvelle carte avec succès', () => {
+            const req = {
+                body: {
+                    question: 'New Question',
+                    answer: 'New Answer',
+                    tags: ['newTag'],
+                }
+            };
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn()
+            };
+            createCard(req, res);
+            expect(res.status).toHaveBeenCalledWith(201);
+            expect(res.json).toHaveBeenCalled();
+        });
+    });
 
-    // describe('updateCard', () => {
-    //     it('devrait mettre à jour l\'état de validation de la carte avec succès', () => {
-    //         const req = {
-    //             params: { cardId: '1' },
-    //             body: { isValid: true }
-    //         };
-    //         const res = {
-    //             status: jest.fn().mockReturnThis(),
-    //             end: jest.fn()
-    //         };
-    //         updateCard(req, res);
-    //         expect(res.status).toHaveBeenCalledWith(204);
-    //         // Vérifie ici que la carte a bien été mise à jour avec le nouvel état de validation
-    //     });
-    // });
-
-    // describe('getAll', () => {
-    //     it('devrait renvoyer toutes les cartes', () => {
-    //         const req = {};
-    //         const res = {
-    //             status: jest.fn().mockReturnThis(),
-    //             json: jest.fn()
-    //         };
-    //         getAll(req, res);
-    //         expect(res.status).toHaveBeenCalledWith(200);
-    //         expect(res.json).toHaveBeenCalledWith(cards);
-    //         // Vérifie ici que toutes les cartes sont renvoyées
-    //     });
-    // });
+    describe('updateCard', () => {
+        it('devrait renvoyer une erreur 400 si isValid n\'est pas un boolean', () => {
+            const req = {
+                params: { cardId: '1' },
+                body: { isValid: 'toto' } // Valeur non booléenne
+            };
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn()
+            };
+            updateCard(req, res);
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Bad request' });
+        });
+    
+        it('devrait renvoyer une erreur 404 si la carte n\'existe pas', () => {
+            const req = {
+                params: { cardId: '3' }, // ID inexistant
+                body: { isValid: true }
+            };
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn()
+            };
+            updateCard(req, res);
+            expect(res.status).toHaveBeenCalledWith(404);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Card not found.' });
+        });
+    });
 
     describe('getQuizz', () => {
         it('devrait renvoyer les cartes pour la date spécifiée', () => {
@@ -70,7 +68,6 @@ describe('CRUD Operations for Cards', () => {
             };
             getQuizz(req, res);
             expect(res.status).toHaveBeenCalledWith(200);
-            // Vérifie ici que seules les cartes pour la date spécifiée sont renvoyées
         });
     });
 });
