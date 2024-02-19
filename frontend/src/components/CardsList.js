@@ -10,4 +10,5 @@ function CardsList({ cards, onAnswer }) {
         </div>
     );
 }
+
 export default CardsList;
