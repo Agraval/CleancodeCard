@@ -12,3 +12,5 @@ function CardComponent({ card, onAnswer }) {
         </div>
     );
 }
+
+export default CardComponent;
