@@ -11,10 +11,8 @@ test('renders App component with navigation links', () => {
     </Router>
   );
 
-  // Vérifie que le texte "Learning Cards" est présent dans l'AppBar
   expect(screen.getByText('Learning Cards')).toBeInTheDocument();
 
-  // Vérifie que les liens "Add Card" et "Quiz" sont présents dans l'AppBar
   expect(screen.getByText(/add card/i).closest('a')).toBeInTheDocument();
   expect(screen.getByText(/quiz/i).closest('a')).toBeInTheDocument();
 });
