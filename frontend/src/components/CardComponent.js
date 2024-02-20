@@ -4,37 +4,37 @@ import { Card, CardContent, Typography, TextField, Button, Grid } from '@mui/mat
 function CardComponent({ card }) {
     const [userAnswer, setUserAnswer] = useState('');
     const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
-
+    const [answerSubmitted, setAnswerSubmitted] = useState(false); 
     const handleAnswerSubmission = () => {
         const isCorrect = userAnswer.trim().toLowerCase() === card.answer.trim().toLowerCase();
         if (isCorrect) {
-            fetch(`http://localhost:8080/cards/${card.id}/answer`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ isValid: true }),
-            })
-                .then(() => {
-                    alert('Correct answer!');
-                    setShowCorrectAnswer(false);
-                })
-                .catch(error => console.error('Error submitting answer:', error));
+            callAnswer(true, "Correct answer!" )
         } else {
             setShowCorrectAnswer(true);
         }
+        setAnswerSubmitted(true);
     };
 
     const handleForceValidation = () => {
+        callAnswer(true, "Answer forced validated!" )       
+    };
+
+    const handleConfirm = () => {
+        callAnswer(false, "Incorrect answer" )       
+    };
+    
+    const callAnswer = (isValidValue, message) =>{
         fetch(`http://localhost:8080/cards/${card.id}/answer`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ isValid: true }),
+            body: JSON.stringify({ isValid: isValidValue }),
         })
             .then(() => {
-                alert('Answer forced validated!');
+                alert(message);
                 setShowCorrectAnswer(false);
             })
             .catch(error => console.error('Error submitting answer:', error));
-    };
+    }
 
     return (
         <Card sx={{ marginBottom: 2 }}>
@@ -57,12 +57,17 @@ function CardComponent({ card }) {
                 )}
                 <Grid container spacing={2} sx={{ marginTop: 2 }}>
                     <Grid item>
-                        <Button variant="contained" onClick={handleAnswerSubmission}>
-                            Submit Answer
-                        </Button>
+                        {!answerSubmitted && ( 
+                            <Button variant="contained" onClick={handleAnswerSubmission}>
+                                Submit Answer
+                            </Button>
+                        )}
                     </Grid>
                     {showCorrectAnswer && (
                         <Grid item>
+                            <Button variant="outlined" onClick={handleConfirm}>
+                                Confirm
+                            </Button>
                             <Button variant="outlined" onClick={handleForceValidation}>
                                 Force Validate
                             </Button>
