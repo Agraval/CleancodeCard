@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import CardsList from './CardsList';
+import { TextField, Button, Grid, Paper, Typography, List, ListItem, ListItemText, Divider } from '@mui/material';
 
 function CardForm({ onAddCard }) {
     const [question, setQuestion] = useState('');
@@ -10,65 +10,88 @@ function CardForm({ onAddCard }) {
     useEffect(() => {
         fetch('http://localhost:8181/cards')
             .then(response => response.json())
-            .then(data => setCards(data))
+            .then(setCards)
             .catch(error => console.error('Error fetching cards:', error));
     }, []);
 
-    const handleAddCard = (cardData) => {
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        const cardData = { question, answer, tags: tags.split(',').map(tag => tag.trim()) };
+
         fetch('http://localhost:8181/cards', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(cardData),
         })
             .then(response => response.json())
-            .then(addedCard => {
-                // Refresh the card list after adding a new card
-                setCards([...cards, addedCard]);
+            .then(newCard => {
+                setCards(prevCards => [...prevCards, newCard]);
+                setQuestion('');
+                setAnswer('');
+                setTags('');
             })
             .catch(error => console.error('Error adding card:', error));
     };
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const cardData = {
-            question,
-            answer,
-            tags: tags.split(',').map(tag => tag.trim()),
-        };
-
-        onAddCard(cardData);
-        setQuestion('');
-        setAnswer('');
-        setTags('');
-    };
-
     return (
-        <>
+        <Paper sx={{ p: 4, margin: 'auto', maxWidth: 500, flexGrow: 1 }}>
+            <Typography variant="h6" gutterBottom>Add New Card</Typography>
             <form onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    value={question}
-                    onChange={(e) => setQuestion(e.target.value)}
-                    placeholder="Question"
-                    required
-                />
-                <input
-                    type="text"
-                    value={answer}
-                    onChange={(e) => setAnswer(e.target.value)}
-                    placeholder="Answer"
-                    required
-                />
-                <input
-                    type="text"
-                    value={tags}
-                    onChange={(e) => setTags(e.target.value)}
-                    placeholder="Tags (comma-separated)"
-                />
-                <button type="submit">Add Card</button>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <TextField
+                            fullWidth
+                            label="Question"
+                            variant="outlined"
+                            value={question}
+                            onChange={e => setQuestion(e.target.value)}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            fullWidth
+                            label="Answer"
+                            variant="outlined"
+                            value={answer}
+                            onChange={e => setAnswer(e.target.value)}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            fullWidth
+                            label="Tags (comma separated)"
+                            variant="outlined"
+                            value={tags}
+                            onChange={e => setTags(e.target.value)}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Button type="submit" variant="contained" color="primary" fullWidth>Add Card</Button>
+                    </Grid>
+                </Grid>
             </form>
-            <CardsList cards={cards} />
-        </>
+            <Typography variant="h6" sx={{ mt: 4 }}>Existing Cards</Typography>
+            <List>
+                {cards.map((card, index) => (
+                    <React.Fragment key={index}>
+                        <ListItem alignItems="flex-start">
+                            <ListItemText
+                                primary={card.question}
+                                secondary={
+                                    <React.Fragment>
+                                        <Typography component="span" variant="body2" color="text.primary">
+                                            Answer:
+                                        </Typography>
+                                        {` ${card.answer}`}
+                                    </React.Fragment>
+                                }
+                            />
+                        </ListItem>
+                        <Divider variant="inset" component="li" />
+                    </React.Fragment>
+                ))}
+            </List>
+        </Paper>
     );
 }
 

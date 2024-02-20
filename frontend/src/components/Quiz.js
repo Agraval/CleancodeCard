@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import CardsList from './CardsList';
+import CardComponent from './CardComponent';
+import { Typography, Container } from '@mui/material';
 
-function Quiz({ cards, setCards }) {
+function Quiz() {
     const [quizCards, setQuizCards] = useState([]);
 
     useEffect(() => {
         fetch('http://localhost:8181/cards/quizz')
             .then(response => response.json())
-            .then(data => setQuizCards(data))
+            .then(setQuizCards)
             .catch(error => console.error('Error fetching quiz cards:', error));
-    }, [setCards]);
-
-    const handleAnswer = (cardId, isCorrect) => {
-    };
+    }, []);
 
     return (
-        <div>
-            <h2>Quiz Time</h2>
-            <CardsList cards={quizCards} onAnswer={handleAnswer} />
-        </div>
+        <Container maxWidth="md" sx={{ mt: 4 }}>
+            <Typography variant="h4" gutterBottom>Quiz Time</Typography>
+            {quizCards.map(card => (
+                <CardComponent key={card.id} card={card} />
+            ))}
+        </Container>
     );
 }
 

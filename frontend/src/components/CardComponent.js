@@ -1,61 +1,76 @@
 import React, { useState } from 'react';
+import { Card, CardContent, Typography, TextField, Button, Grid } from '@mui/material';
 
-function CardComponent({ card, onForceValidation }) {
+function CardComponent({ card }) {
     const [userAnswer, setUserAnswer] = useState('');
     const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
 
     const handleAnswerSubmission = () => {
         const isCorrect = userAnswer.trim().toLowerCase() === card.answer.trim().toLowerCase();
-        submitAnswer(isCorrect);
-    };
-
-    const submitAnswer = (isCorrect) => {
-        fetch(`http://localhost:8181/cards/${card.id}/answer`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ isValid: isCorrect }),
-        })
-            .then(() => {
-                if (!isCorrect) {
-                    setShowCorrectAnswer(true); // Show the correct answer if wrong
-                } else {
-                    setShowCorrectAnswer(false); // Reset to hide the correct answer if the user's answer is right
-                    onForceValidation(card.id, true); // Update the card status as validated
-                }
-                setUserAnswer(''); // Reset the user answer for the next interaction
+        if (isCorrect) {
+            fetch(`http://localhost:8181/cards/${card.id}/answer`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ isValid: true }),
             })
-            .catch(error => {
-                console.error('Error submitting answer:', error);
-                alert('There was an error submitting your answer. Please try again.');
-            });
+                .then(() => {
+                    alert('Correct answer!');
+                    setShowCorrectAnswer(false);
+                })
+                .catch(error => console.error('Error submitting answer:', error));
+        } else {
+            setShowCorrectAnswer(true);
+        }
     };
 
     const handleForceValidation = () => {
-        submitAnswer(true); // Force the answer to be correct regardless of the user's input
+        fetch(`http://localhost:8181/cards/${card.id}/answer`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isValid: true }),
+        })
+            .then(() => {
+                alert('Answer forced validated!');
+                setShowCorrectAnswer(false);
+            })
+            .catch(error => console.error('Error submitting answer:', error));
     };
 
     return (
-        <div className="card">
-            <div>Question: {card.question}</div>
-            {showCorrectAnswer && (
-                <>
-                    <div>Your Answer: {userAnswer}</div>
-                    <div>Correct Answer: {card.answer}</div>
-                </>
-            )}
-            {!showCorrectAnswer && (
-                <input
-                    type="text"
+        <Card sx={{ marginBottom: 2 }}>
+            <CardContent>
+                <Typography variant="h5" component="div">
+                    Question: {card.question}
+                </Typography>
+                <TextField
+                    fullWidth
+                    label="Your Answer"
+                    variant="outlined"
                     value={userAnswer}
                     onChange={(e) => setUserAnswer(e.target.value)}
-                    placeholder="Your answer"
+                    margin="normal"
                 />
-            )}
-            <button onClick={handleAnswerSubmission} disabled={showCorrectAnswer}>Submit Answer</button>
-            <button onClick={handleForceValidation} disabled={!showCorrectAnswer}>Force Validate</button>
-        </div>
+                {showCorrectAnswer && (
+                    <Typography sx={{ color: 'red', marginTop: 2 }}>
+                        Correct Answer: {card.answer}
+                    </Typography>
+                )}
+                <Grid container spacing={2} sx={{ marginTop: 2 }}>
+                    <Grid item>
+                        <Button variant="contained" onClick={handleAnswerSubmission}>
+                            Submit Answer
+                        </Button>
+                    </Grid>
+                    {showCorrectAnswer && (
+                        <Grid item>
+                            <Button variant="outlined" onClick={handleForceValidation}>
+                                Force Validate
+                            </Button>
+                        </Grid>
+                    )}
+                </Grid>
+            </CardContent>
+        </Card>
     );
 }
 
