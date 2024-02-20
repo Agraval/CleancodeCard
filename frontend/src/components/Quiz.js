@@ -6,7 +6,7 @@ function Quiz() {
     const [quizCards, setQuizCards] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:8181/cards/quizz')
+        fetch('http://localhost:8080/cards/quizz')
             .then(response => response.json())
             .then(setQuizCards)
             .catch(error => console.error('Error fetching quiz cards:', error));

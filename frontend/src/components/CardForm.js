@@ -8,7 +8,7 @@ function CardForm({ onAddCard }) {
     const [cards, setCards] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:8181/cards')
+        fetch('http://localhost:8080/cards')
             .then(response => response.json())
             .then(setCards)
             .catch(error => console.error('Error fetching cards:', error));
@@ -18,7 +18,7 @@ function CardForm({ onAddCard }) {
         event.preventDefault();
         const cardData = { question, answer, tags: tags.split(',').map(tag => tag.trim()) };
 
-        fetch('http://localhost:8181/cards', {
+        fetch('http://localhost:8080/cards', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(cardData),

@@ -8,7 +8,7 @@ function CardComponent({ card }) {
     const handleAnswerSubmission = () => {
         const isCorrect = userAnswer.trim().toLowerCase() === card.answer.trim().toLowerCase();
         if (isCorrect) {
-            fetch(`http://localhost:8181/cards/${card.id}/answer`, {
+            fetch(`http://localhost:8080/cards/${card.id}/answer`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ isValid: true }),
@@ -24,7 +24,7 @@ function CardComponent({ card }) {
     };
 
     const handleForceValidation = () => {
-        fetch(`http://localhost:8181/cards/${card.id}/answer`, {
+        fetch(`http://localhost:8080/cards/${card.id}/answer`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ isValid: true }),
